@@ -1,0 +1,10 @@
+# Configs
+.DS_Store
+.vscode/
+
+# Envs
+*.env*
+!.default.env
+
+# Build Files
+frv

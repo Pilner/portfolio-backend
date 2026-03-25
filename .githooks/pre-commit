@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Pre-commit: Checking and updating vendor directory and Go dependencies..."
+make vendor
+
+if [ $? -ne 0 ]; then
+    echo "Error: 'make vendor' failed. Aborting commit."
+    exit 1
+fi
+
+git add vendor/ go.mod go.sum
+echo "Vendor directory updated and staged."
+exit 0

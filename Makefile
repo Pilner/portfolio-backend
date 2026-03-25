@@ -1,4 +1,10 @@
-.PHONY: vendor
+.PHONY: init vendor
+
+init:
+	@echo "Initializing local development environment..."
+	git config core.hooksPath .githooks
+	chmod +x .githooks/pre-commit
+	@echo "Git hooks configured successfully!"
 
 run:
 	@go build -o frv ./cmd/app

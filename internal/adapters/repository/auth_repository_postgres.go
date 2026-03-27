@@ -30,13 +30,13 @@ func NewAuthPostgresRepository(dbPool *pgxpool.Pool, logger *slog.Logger) AuthPo
 	}
 }
 
-func (r AuthPostgresRepository) Register(ctx context.Context, payload authdomain.AddUser) (authdomain.User, error) {
+func (r AuthPostgresRepository) CreateUser(ctx context.Context, payload authdomain.RegisterUser) (authdomain.User, error) {
 	u := authdomain.User{}
 
 	tx, err := r.dbPool.Begin(ctx)
 	if err != nil {
 		r.logger.ErrorContext(ctx, "failed to begin transaction for auth register", "error", err)
-		return u, domain.ErrRegisterUserFailed
+		return u, domain.ErrCreateUserFailed
 	}
 	defer func() {
 		if err := tx.Rollback(ctx); err != nil && !errors.Is(err, pgx.ErrTxClosed) {
@@ -67,7 +67,7 @@ func (r AuthPostgresRepository) Register(ctx context.Context, payload authdomain
 		}
 
 		r.logger.ErrorContext(ctx, "failed inserting to user table for auth register", "error", err)
-		return u, domain.ErrRegisterUserFailed
+		return u, domain.ErrCreateUserFailed
 	}
 
 	userInfoQuery := fmt.Sprintf(`
@@ -82,13 +82,45 @@ func (r AuthPostgresRepository) Register(ctx context.Context, payload authdomain
 	err = tx.QueryRow(ctx, userInfoQuery, u.Id, payload.DisplayName).Scan(&u.DisplayName)
 	if err != nil {
 		r.logger.ErrorContext(ctx, "failed inserting to user_info table for auth register", "error", err)
-		return u, domain.ErrRegisterUserFailed
+		return u, domain.ErrCreateUserFailed
 	}
 
 	if err := tx.Commit(ctx); err != nil {
 		r.logger.ErrorContext(ctx, "failed to commit transaction for auth register", "error", err)
-		return u, domain.ErrRegisterUserFailed
+		return u, domain.ErrCreateUserFailed
 	}
 
 	return u, nil
+}
+
+func (r AuthPostgresRepository) FindUser(ctx context.Context, email string) (authdomain.User, string, error) {
+	u := authdomain.User{}
+	var passwordHash string
+
+	query := fmt.Sprintf(`
+		SELECT
+			u.id,
+			u.email,
+			u.password_hash,
+			ui.display_name
+		FROM %v u
+		INNER JOIN %v ui
+			ON u.id = ui.user_id
+		WHERE u.email = $1
+	`, usersTable, userInfoTable)
+	err := r.dbPool.QueryRow(ctx, query, email).Scan(
+		&u.Id,
+		&u.Email,
+		&passwordHash,
+		&u.DisplayName,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return u, passwordHash, domain.ErrNoRecordsReturned
+		}
+		r.logger.ErrorContext(ctx, "failed fetching user for auth login", "error", err)
+		return u, passwordHash, domain.ErrFindUserFailed
+	}
+
+	return u, passwordHash, nil
 }

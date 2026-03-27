@@ -16,21 +16,25 @@ import (
 
 const (
 	AuthRegisterRenderErrFailed = "auth register: rendering error failed"
+	AuthLoginRenderErrFailed    = "auth login: rendering error failed"
 )
 
 type PublicHandler struct {
 	authRegister ports.AuthRegister
+	authLogin    ports.AuthLogin
 	config       config.Values
 	logger       *slog.Logger
 }
 
 func NewPublicHandler(
 	authRegister ports.AuthRegister,
+	authLogin ports.AuthLogin,
 	cfg config.Values,
 	logger *slog.Logger,
 ) PublicHandler {
 	return PublicHandler{
 		authRegister: authRegister,
+		authLogin:    authLogin,
 		config:       cfg,
 		logger:       logger,
 	}
@@ -39,6 +43,7 @@ func NewPublicHandler(
 func (h PublicHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Post("/signup", h.AuthRegister)
+	r.Post("/signin", h.AuthLogin)
 
 	return r
 }
@@ -57,9 +62,11 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := authdomain.AddUser{
-		Email:       req.Email,
-		Password:    req.Password,
+	payload := authdomain.RegisterUser{
+		AuthBase: authdomain.AuthBase{
+			Email:    req.Email,
+			Password: req.Password,
+		},
 		DisplayName: req.DisplayName,
 	}
 
@@ -100,7 +107,74 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 
 	h.logger.InfoContext(r.Context(), "user registered successfully")
 
-	w.WriteHeader(http.StatusCreated)
+	render.Status(r, http.StatusCreated)
+	render.Respond(w, r, User{
+		Id:          data.Id,
+		Email:       data.Email,
+		DisplayName: data.DisplayName,
+	})
+}
+
+func (h PublicHandler) AuthLogin(w http.ResponseWriter, r *http.Request) {
+	if r.ContentLength == 0 {
+		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, errorsapi.ErrEmptyRequest())
+		return
+	}
+
+	req := LoginAuth{}
+	if err := render.Bind(r, &req); err != nil {
+		err = errorsapi.TranslateBindError(err)
+		apiError := errorsapi.ErrInvalidRequest(err, errorsapi.CodeInvalidRequest)
+		errorsapi.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
+		return
+	}
+
+	payload := authdomain.LoginUser{
+		AuthBase: authdomain.AuthBase{
+			Email:    req.Email,
+			Password: req.Password,
+		},
+	}
+
+	data, accessToken, refreshToken, err := h.authLogin.Handle(r.Context(), payload)
+	if err != nil {
+		var apiError render.Renderer
+		switch {
+		case errors.Is(err, domain.ErrNoRecordsReturned),
+			errors.Is(err, domain.ErrPasswordDoesNotMatch):
+			apiError = errorsapi.ErrUnauthorized()
+
+		default:
+			apiError = errorsapi.ErrInternalServerError(err)
+		}
+		h.logger.ErrorContext(r.Context(), "auth login user failed", "error", err)
+		errorsapi.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    accessToken,
+		Path:     "/",
+		MaxAge:   h.config.JwtTokenExpiryMinutes * 60, // MaxAge takes seconds
+		HttpOnly: true,
+		Secure:   h.config.IsProd, // Set to true in production
+		SameSite: http.SameSiteNoneMode,
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		Path:     "/",
+		MaxAge:   h.config.RefreshTokenExpiryMinutes * 60, // MaxAge takes seconds
+		HttpOnly: true,
+		Secure:   h.config.IsProd, // Set to true in production
+		SameSite: http.SameSiteNoneMode,
+	})
+
+	h.logger.InfoContext(r.Context(), "user login successfully")
+
+	render.Status(r, http.StatusOK)
 	render.Respond(w, r, User{
 		Id:          data.Id,
 		Email:       data.Email,

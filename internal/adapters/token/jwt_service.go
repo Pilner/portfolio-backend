@@ -24,11 +24,11 @@ func NewJwtService(cfg config.Values) ports.TokenService {
 func (s jwtService) GenerateToken(tokenType tokendomain.TokenType, payload authdomain.User) (string, error) {
 	var key []byte
 	var duration int
-	if tokenType == tokendomain.TokenJwt {
+	if tokenType == tokendomain.TokenTypeJwt {
 		key = []byte(s.config.JwtSecretKey)
 		duration = s.config.JwtTokenExpiryMinutes
 	}
-	if tokenType == tokendomain.TokenRefresh {
+	if tokenType == tokendomain.TokenTypeRefresh {
 		key = []byte(s.config.RefreshTokenSecretKey)
 		duration = s.config.RefreshTokenExpiryMinutes
 	}
@@ -58,10 +58,10 @@ func (s jwtService) GenerateToken(tokenType tokendomain.TokenType, payload authd
 
 func (s jwtService) ValidateToken(tokenType tokendomain.TokenType, tokenString string) (*authdomain.User, error) {
 	var key []byte
-	if tokenType == tokendomain.TokenJwt {
+	if tokenType == tokendomain.TokenTypeJwt {
 		key = []byte(s.config.JwtSecretKey)
 	}
-	if tokenType == tokendomain.TokenRefresh {
+	if tokenType == tokendomain.TokenTypeRefresh {
 		key = []byte(s.config.RefreshTokenSecretKey)
 	}
 

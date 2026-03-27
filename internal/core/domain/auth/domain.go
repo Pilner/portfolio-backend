@@ -6,8 +6,16 @@ type User struct {
 	DisplayName string
 }
 
-type AddUser struct {
-	Email       string
-	Password    string
+type AuthBase struct {
+	Email    string
+	Password string
+}
+
+type RegisterUser struct {
+	AuthBase
 	DisplayName string
+}
+
+type LoginUser struct {
+	AuthBase
 }

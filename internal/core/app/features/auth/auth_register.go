@@ -30,7 +30,7 @@ func NewAuthRegisterHandler(repo authdomain.AuthRepository, hasher ports.Passwor
 	}
 }
 
-func (h AuthRegisterHandler) Handle(ctx context.Context, payload authdomain.AddUser) (authdomain.User, string, string, error) {
+func (h AuthRegisterHandler) Handle(ctx context.Context, payload authdomain.RegisterUser) (authdomain.User, string, string, error) {
 	hashedPassword, err := h.hasher.Hash(payload.Password)
 	if err != nil {
 		return authdomain.User{}, "", "", err
@@ -38,17 +38,17 @@ func (h AuthRegisterHandler) Handle(ctx context.Context, payload authdomain.AddU
 
 	payload.Password = hashedPassword
 
-	user, err := h.repo.Register(ctx, payload)
+	user, err := h.repo.CreateUser(ctx, payload)
 	if err != nil {
 		return user, "", "", err
 	}
 
-	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenJwt, user)
+	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeJwt, user)
 	if err != nil {
 		return user, "", "", err
 	}
 
-	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenRefresh, user)
+	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeRefresh, user)
 	if err != nil {
 		return user, "", "", err
 	}

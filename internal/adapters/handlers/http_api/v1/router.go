@@ -26,6 +26,7 @@ func NewPublicRouter(app core.Application, envCfg config.Values, logger *slog.Lo
 
 	authHandler := v1auth.NewPublicHandler(
 		app.Features.AuthRegister,
+		app.Features.AuthLogin,
 		envCfg,
 		logger,
 	)

@@ -5,5 +5,6 @@ import (
 )
 
 type AuthRepository interface {
-	Register(ctx context.Context, payload AddUser) (User, error)
+	CreateUser(ctx context.Context, payload RegisterUser) (User, error)
+	FindUser(ctx context.Context, email string) (User, string, error)
 }

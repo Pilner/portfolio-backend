@@ -9,8 +9,8 @@ import (
 type TokenType string
 
 const (
-	TokenJwt     TokenType = "jwt"
-	TokenRefresh TokenType = "refresh"
+	TokenTypeJwt     TokenType = "jwt"
+	TokenTypeRefresh TokenType = "refresh"
 )
 
 type TokenClaim struct {

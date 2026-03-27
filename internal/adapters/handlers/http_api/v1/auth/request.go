@@ -30,3 +30,20 @@ func (rb *RegisterAuth) Bind(r *http.Request) error {
 
 	return nil
 }
+
+type LoginAuth struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (rb *LoginAuth) Bind(r *http.Request) error {
+	if rb.Email == "" {
+		return errorsapi.ErrEmptyUsername
+	}
+
+	if rb.Password == "" {
+		return errorsapi.ErrEmptyPassword
+	}
+
+	return nil
+}

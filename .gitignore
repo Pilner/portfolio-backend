@@ -1,6 +1,7 @@
 # Configs
 .DS_Store
 .vscode/
+.cursor
 
 # Envs
 *.env*

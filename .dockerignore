@@ -4,3 +4,4 @@ Dockerfile
 .git
 /build
 tern.log
+.cursor

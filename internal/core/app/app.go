@@ -20,9 +20,10 @@ type Features struct {
 }
 
 type Application struct {
-	Config   config.Values
-	Features Features
-	dbPool   *pgxpool.Pool
+	Config       config.Values
+	Features     Features
+	TokenService ports.TokenService
+	dbPool       *pgxpool.Pool
 }
 
 func NewApplication(ctx context.Context, config config.Values, logger *slog.Logger) Application {
@@ -45,9 +46,12 @@ func NewApplication(ctx context.Context, config config.Values, logger *slog.Logg
 	tokenService := token.NewJwtService(config)
 
 	return Application{
+		Config: config,
 		Features: Features{
 			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, bcryptHasher, tokenService),
 			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, bcryptHasher, tokenService),
 		},
+		TokenService: tokenService,
+		dbPool:       postgresqlPool,
 	}
 }

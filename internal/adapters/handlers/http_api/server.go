@@ -32,7 +32,7 @@ func NewHttpApiServer(addr string, app core.Application, envCfg config.Values, l
 	rootRouter := chi.NewRouter()
 	rootRouter.Use(middlewares.SetRequestId)
 
-	adminRouter := v1.NewAdminRouter(app, logger)
+	adminRouter := v1.NewAdminRouter(app, envCfg, logger)
 	publicRouter := v1.NewPublicRouter(app, envCfg, logger)
 
 	// Admin Routes

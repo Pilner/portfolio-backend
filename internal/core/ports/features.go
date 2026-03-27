@@ -14,3 +14,6 @@ type AuthRegister interface {
 type AuthLogin interface {
 	Handle(ctx context.Context, payload authdomain.LoginUser) (authdomain.User, string, string, error)
 }
+type AuthRefresh interface {
+	Handle(ctx context.Context, userData *authdomain.User) (string, string, error)
+}

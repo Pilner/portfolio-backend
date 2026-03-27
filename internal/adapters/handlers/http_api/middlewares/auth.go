@@ -22,16 +22,20 @@ func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var tokenCookie string
-			if tokenType == tokendomain.TokenTypeJwt {
+			switch tokenType {
+			case tokendomain.TokenTypeJwt:
 				tokenCookie = "access_token"
-			}
-			if tokenType == tokendomain.TokenTypeRefresh {
+			case tokendomain.TokenTypeRefresh:
 				tokenCookie = "refresh_token"
+			default:
+				logger.ErrorContext(r.Context(), "unknown token type", "tokenType", tokenType)
+				commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrUnauthorized())
+				return
 			}
 
 			cookie, err := r.Cookie(tokenCookie)
 			if err != nil || cookie.Value == "" {
-				logger.ErrorContext(r.Context(), "missing or invalid token cookie", "cookie", tokenCookie, "err", err)
+				logger.ErrorContext(r.Context(), "missing token cookie", "cookie", tokenCookie, "err", err)
 				commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrUnauthorized())
 				return
 			}
@@ -39,7 +43,7 @@ func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, 
 			u, err := tokenSvc.ValidateToken(tokenType, cookie.Value)
 			if err != nil {
 				if errors.Is(err, domain.ErrInvalidToken) || errors.Is(err, domain.ErrExpiredToken) {
-					logger.ErrorContext(r.Context(), "missing or invalid token cookie", "cookie", tokenCookie, "err", err)
+					logger.ErrorContext(r.Context(), "invalid token cookie", "cookie", tokenCookie, "err", err)
 					commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrUnauthorized())
 					return
 				}

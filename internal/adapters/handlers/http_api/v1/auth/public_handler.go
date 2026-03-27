@@ -108,10 +108,12 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 	h.logger.InfoContext(r.Context(), "user registered successfully")
 
 	render.Status(r, http.StatusCreated)
-	render.Respond(w, r, User{
-		Id:          data.Id,
-		Email:       data.Email,
-		DisplayName: data.DisplayName,
+	render.Respond(w, r, UserResponse{
+		Data: User{
+			Id:          data.Id,
+			Email:       data.Email,
+			DisplayName: data.DisplayName,
+		},
 	})
 }
 
@@ -175,9 +177,11 @@ func (h PublicHandler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 	h.logger.InfoContext(r.Context(), "user login successfully")
 
 	render.Status(r, http.StatusOK)
-	render.Respond(w, r, User{
-		Id:          data.Id,
-		Email:       data.Email,
-		DisplayName: data.DisplayName,
+	render.Respond(w, r, UserResponse{
+		Data: User{
+			Id:          data.Id,
+			Email:       data.Email,
+			DisplayName: data.DisplayName,
+		},
 	})
 }

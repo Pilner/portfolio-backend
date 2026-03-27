@@ -17,6 +17,7 @@ import (
 type Features struct {
 	AuthRegister ports.AuthRegister
 	AuthLogin    ports.AuthLogin
+	AuthRefresh  ports.AuthRefresh
 }
 
 type Application struct {
@@ -50,6 +51,7 @@ func NewApplication(ctx context.Context, config config.Values, logger *slog.Logg
 		Features: Features{
 			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, bcryptHasher, tokenService),
 			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, bcryptHasher, tokenService),
+			AuthRefresh:  authfeature.NewAuthRefreshHandler(tokenService),
 		},
 		TokenService: tokenService,
 		dbPool:       postgresqlPool,

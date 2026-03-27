@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"portfolio-backend/internal/adapters/config"
-	errorsapi "portfolio-backend/internal/adapters/handlers/http_api/commons"
+	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
 	"portfolio-backend/internal/core/domain"
 	authdomain "portfolio-backend/internal/core/domain/auth"
 	"portfolio-backend/internal/core/ports"
@@ -50,15 +50,15 @@ func (h PublicHandler) Routes() chi.Router {
 
 func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
-		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, errorsapi.ErrEmptyRequest())
+		commons.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, commons.ErrEmptyRequest())
 		return
 	}
 
 	req := RegisterAuth{}
 	if err := render.Bind(r, &req); err != nil {
-		err = errorsapi.TranslateBindError(err)
-		apiError := errorsapi.ErrInvalidRequest(err, errorsapi.CodeInvalidRequest)
-		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, apiError)
+		err = commons.TranslateBindError(err)
+		apiError := commons.ErrInvalidRequest(err, commons.CodeInvalidRequest)
+		commons.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, apiError)
 		return
 	}
 
@@ -75,13 +75,13 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		var apiError render.Renderer
 		switch {
 		case errors.Is(err, domain.ErrEmailAlreadyExists):
-			apiError = errorsapi.ErrConflict(err, errorsapi.CodeAuthEmailAlreadyExist)
+			apiError = commons.ErrConflict(err, commons.CodeAuthEmailAlreadyExist)
 		default:
-			apiError = errorsapi.ErrInternalServerError(err)
+			apiError = commons.ErrInternalServerError(err)
 		}
 
 		h.logger.ErrorContext(r.Context(), "auth register user failed", "error", err)
-		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, apiError)
+		commons.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, apiError)
 		return
 	}
 
@@ -117,15 +117,15 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 
 func (h PublicHandler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
-		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, errorsapi.ErrEmptyRequest())
+		commons.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, commons.ErrEmptyRequest())
 		return
 	}
 
 	req := LoginAuth{}
 	if err := render.Bind(r, &req); err != nil {
-		err = errorsapi.TranslateBindError(err)
-		apiError := errorsapi.ErrInvalidRequest(err, errorsapi.CodeInvalidRequest)
-		errorsapi.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
+		err = commons.TranslateBindError(err)
+		apiError := commons.ErrInvalidRequest(err, commons.CodeInvalidRequest)
+		commons.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
 		return
 	}
 
@@ -142,13 +142,13 @@ func (h PublicHandler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, domain.ErrNoRecordsReturned),
 			errors.Is(err, domain.ErrPasswordDoesNotMatch):
-			apiError = errorsapi.ErrUnauthorized()
+			apiError = commons.ErrUnauthorized()
 
 		default:
-			apiError = errorsapi.ErrInternalServerError(err)
+			apiError = commons.ErrInternalServerError(err)
 		}
 		h.logger.ErrorContext(r.Context(), "auth login user failed", "error", err)
-		errorsapi.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
+		commons.RenderError(w, r, h.logger, AuthLoginRenderErrFailed, apiError)
 		return
 	}
 

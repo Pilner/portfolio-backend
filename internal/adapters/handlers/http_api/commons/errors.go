@@ -14,8 +14,10 @@ import (
 /* API-Level Validation Errors */
 var (
 	ErrInvalidDataType    = errors.New("invalid data type in request payload")
-	ErrEmptyUsername      = errors.New("username should have a value")
+	ErrEmptyEmail         = errors.New("email should have a value")
+	ErrInvalidEmail       = errors.New("invalid email format")
 	ErrEmptyPassword      = errors.New("password should have a value")
+	ErrPasswordTooShort   = errors.New("password should be at least 8 characters long")
 	ErrEmptyDisplayName   = errors.New("display_name should have a value")
 	ErrInvalidDisplayName = errors.New("invalid display_name format")
 )

@@ -2,7 +2,7 @@ package v1
 
 import (
 	"net/http"
-	errorsapi "portfolio-backend/internal/adapters/handlers/http_api/commons"
+	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
 )
 
 type RegisterAuth struct {
@@ -13,19 +13,27 @@ type RegisterAuth struct {
 
 func (rb *RegisterAuth) Bind(r *http.Request) error {
 	if rb.Email == "" {
-		return errorsapi.ErrEmptyUsername
+		return commons.ErrEmptyEmail
 	}
+	normalizedEmail, err := commons.NormalizeEmailAlias(rb.Email)
+	if err != nil {
+		return commons.ErrInvalidEmail
+	}
+	rb.Email = normalizedEmail
 
 	if rb.Password == "" {
-		return errorsapi.ErrEmptyPassword
+		return commons.ErrEmptyPassword
+	}
+	if len(rb.Password) < 8 {
+		return commons.ErrPasswordTooShort
 	}
 
 	if rb.DisplayName == "" {
-		return errorsapi.ErrEmptyDisplayName
+		return commons.ErrEmptyDisplayName
 	}
 
 	if len(rb.DisplayName) > 50 {
-		return errorsapi.ErrInvalidDisplayName
+		return commons.ErrInvalidDisplayName
 	}
 
 	return nil
@@ -38,11 +46,11 @@ type LoginAuth struct {
 
 func (rb *LoginAuth) Bind(r *http.Request) error {
 	if rb.Email == "" {
-		return errorsapi.ErrEmptyUsername
+		return commons.ErrEmptyEmail
 	}
 
 	if rb.Password == "" {
-		return errorsapi.ErrEmptyPassword
+		return commons.ErrEmptyPassword
 	}
 
 	return nil

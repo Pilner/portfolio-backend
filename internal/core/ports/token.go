@@ -1,10 +1,11 @@
 package ports
 
-import auth "portfolio-backend/internal/core/domain/auth"
+import (
+	authdomain "portfolio-backend/internal/core/domain/auth"
+	tokendomain "portfolio-backend/internal/core/domain/token"
+)
 
 type TokenService interface {
-	GenerateAccessToken(payload auth.User) (string, error)
-	GenerateRefreshToken(payload auth.User) (string, error)
-	ValidateAccessToken(token string) (*auth.User, error)
-	ValidateRefreshToken(token string) (*auth.User, error)
+	GenerateToken(tokenType tokendomain.TokenType, payload authdomain.User) (string, error)
+	ValidateToken(tokenType tokendomain.TokenType, token string) (*authdomain.User, error)
 }

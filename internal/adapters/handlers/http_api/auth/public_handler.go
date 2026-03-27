@@ -73,11 +73,10 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 			apiError = errorsapi.ErrInternalServerError(err)
 		}
 
+		h.logger.ErrorContext(r.Context(), "auth register user failed", "error", err)
 		errorsapi.RenderError(w, r, h.logger, AuthRegisterRenderErrFailed, apiError)
 		return
 	}
-
-	isProd := h.config.AppEnv == "production"
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "access_token",
@@ -85,7 +84,7 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		MaxAge:   h.config.JwtTokenExpiryMinutes * 60, // MaxAge takes seconds
 		HttpOnly: true,
-		Secure:   isProd, // Set to true in production
+		Secure:   h.config.IsProd, // Set to true in production
 		SameSite: http.SameSiteNoneMode,
 	})
 
@@ -95,7 +94,7 @@ func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		MaxAge:   h.config.RefreshTokenExpiryMinutes * 60, // MaxAge takes seconds
 		HttpOnly: true,
-		Secure:   isProd, // Set to true in production
+		Secure:   h.config.IsProd, // Set to true in production
 		SameSite: http.SameSiteNoneMode,
 	})
 

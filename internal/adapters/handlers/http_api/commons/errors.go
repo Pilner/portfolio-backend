@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -45,7 +46,8 @@ type ApiError struct {
 }
 
 func (e *ApiError) Render(w http.ResponseWriter, r *http.Request) error {
-	// TODO: Request ID
+	requestId := middleware.GetReqID(r.Context())
+	e.RequestId = requestId
 	e.Timestamp = time.Now().Local().Format(time.RFC3339)
 	render.Status(r, e.HttpStatusCode)
 	return nil

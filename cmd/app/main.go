@@ -14,6 +14,7 @@ import (
 	"portfolio-backend/internal/adapters/config"
 	"portfolio-backend/internal/adapters/handlers/http_api"
 	"portfolio-backend/internal/adapters/repository/migrations"
+	"portfolio-backend/internal/adapters/util"
 	core "portfolio-backend/internal/core/app"
 )
 
@@ -24,7 +25,9 @@ type CloseableService interface {
 func main() {
 	// Load Timezone to calibrate server time
 	loadTimezone()
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	logHandler := &util.LoggerHandler{Handler: slog.NewJSONHandler(os.Stdout, nil)}
+	logger := slog.New(logHandler)
 	envConfig, err := config.LoadConfig(os.Getenv("ENV"), "./configs")
 	if err != nil {
 		logger.Error("configuration load error", "err", err)

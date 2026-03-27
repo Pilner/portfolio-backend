@@ -14,6 +14,7 @@ type Values struct {
 	RefreshTokenSecretKey     string `mapstructure:"REFRESH_TOKEN_SECRET_KEY"`
 	RefreshTokenExpiryMinutes int    `mapstructure:"REFRESH_TOKEN_TOKEN_EXPIRY_MINUTES"`
 	AppEnv                    string `mapstructure:"APP_ENV"`
+	IsProd                    bool
 }
 
 func LoadConfig(env, path string) (c Values, err error) {
@@ -47,6 +48,10 @@ func LoadConfig(env, path string) (c Values, err error) {
 	// Unmarshal config into the Values struct
 	if err = viper.Unmarshal(&c); err != nil {
 		return Values{}, nil
+	}
+
+	if c.AppEnv == "production" {
+		c.IsProd = true
 	}
 
 	return c, nil

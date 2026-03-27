@@ -6,6 +6,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type TokenType string
+
+const (
+	TokenJwt     TokenType = "jwt"
+	TokenRefresh TokenType = "refresh"
+)
+
 type TokenClaim struct {
 	authdomain.User
 	jwt.RegisteredClaims

@@ -10,7 +10,8 @@ import (
 	core "portfolio-backend/internal/core/app"
 	"time"
 
-	auth "portfolio-backend/internal/adapters/handlers/http_api/auth"
+	authhandler "portfolio-backend/internal/adapters/handlers/http_api/auth"
+	"portfolio-backend/internal/adapters/handlers/http_api/middlewares"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -35,7 +36,7 @@ func NewHttpApiServer(addr string, app core.Application, envConfig config.Values
 	adminApiRouter.Use(otelchi.Middleware("frv-admin-service", otelchi.WithChiRoutes(adminApiRouter)))
 
 	// Public
-	authHandler := auth.NewPublicHandler(
+	authHandler := authhandler.NewPublicHandler(
 		app.Features.AuthRegister,
 		envConfig,
 		logger,
@@ -53,6 +54,7 @@ func NewHttpApiServer(addr string, app core.Application, envConfig config.Values
 	})
 
 	rootRouter := chi.NewRouter()
+	rootRouter.Use(middlewares.SetRequestId)
 	rootRouter.Mount("/api/admin/v1", otelhttp.NewHandler(adminApiRouter, "admin-server"))
 	rootRouter.Mount("/api/v1", otelhttp.NewHandler(publicApiRouter, "public-server"))
 

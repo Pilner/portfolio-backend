@@ -3,6 +3,7 @@ package features
 import (
 	"context"
 	authdomain "portfolio-backend/internal/core/domain/auth"
+	tokendomain "portfolio-backend/internal/core/domain/token"
 	"portfolio-backend/internal/core/ports"
 )
 
@@ -42,12 +43,12 @@ func (h AuthRegisterHandler) Handle(ctx context.Context, payload authdomain.AddU
 		return user, "", "", err
 	}
 
-	accessToken, err := h.tokenService.GenerateAccessToken(user)
+	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenJwt, user)
 	if err != nil {
 		return user, "", "", err
 	}
 
-	refreshToken, err := h.tokenService.GenerateRefreshToken(user)
+	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenRefresh, user)
 	if err != nil {
 		return user, "", "", err
 	}

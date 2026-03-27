@@ -40,9 +40,11 @@ func main() {
 
 	serviceCtx, serviceStopCtx := context.WithCancel(context.Background())
 
-	httpServer := http_api.NewHttpApiServer(":8000", application, envConfig, logger)
+	port := envConfig.PortNumber
+
+	httpServer := http_api.NewHttpApiServer(fmt.Sprintf(":%v", port), application, envConfig, logger)
 	listenForShutdown(serviceCtx, serviceStopCtx, logger, httpServer)
-	httpServer.StartServer()
+	httpServer.StartServer(port)
 }
 
 func listenForShutdown(serviceCtx context.Context, serviceStopCtx context.CancelFunc, logger *slog.Logger, services ...CloseableService) {

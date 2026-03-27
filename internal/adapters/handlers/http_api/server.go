@@ -3,6 +3,7 @@ package http_api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -10,12 +11,10 @@ import (
 	core "portfolio-backend/internal/core/app"
 	"time"
 
-	authhandler "portfolio-backend/internal/adapters/handlers/http_api/auth"
 	"portfolio-backend/internal/adapters/handlers/http_api/middlewares"
+	v1 "portfolio-backend/internal/adapters/handlers/http_api/v1"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
-	"github.com/riandyrn/otelchi"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -28,35 +27,19 @@ type HttpApiServer struct {
 	logger *slog.Logger
 }
 
-func NewHttpApiServer(addr string, app core.Application, envConfig config.Values, logger *slog.Logger) HttpApiServer {
-
-	// Admin
-	adminApiRouter := chi.NewRouter()
-	adminApiRouter.Use(render.SetContentType(render.ContentTypeJSON))
-	adminApiRouter.Use(otelchi.Middleware("frv-admin-service", otelchi.WithChiRoutes(adminApiRouter)))
-
-	// Public
-	authHandler := authhandler.NewPublicHandler(
-		app.Features.AuthRegister,
-		envConfig,
-		logger,
-	)
-
-	publicApiRouter := chi.NewRouter()
-	publicApiRouter.Use(render.SetContentType(render.ContentTypeJSON))
-	publicApiRouter.Use(otelchi.Middleware("frv-public-service", otelchi.WithChiRoutes(publicApiRouter)))
-
-	// Admin Routing
-
-	// Public Routing
-	publicApiRouter.Route(authRoutePath, func(r chi.Router) {
-		r.Mount("/", authHandler.Routes())
-	})
+func NewHttpApiServer(addr string, app core.Application, envCfg config.Values, logger *slog.Logger) HttpApiServer {
 
 	rootRouter := chi.NewRouter()
 	rootRouter.Use(middlewares.SetRequestId)
-	rootRouter.Mount("/api/admin/v1", otelhttp.NewHandler(adminApiRouter, "admin-server"))
-	rootRouter.Mount("/api/v1", otelhttp.NewHandler(publicApiRouter, "public-server"))
+
+	adminRouter := v1.NewAdminRouter()
+	publicRouter := v1.NewPublicRouter(app, envCfg, logger)
+
+	// Admin Routes
+	rootRouter.Mount("/api/v1/admin", otelhttp.NewHandler(adminRouter, "admin-server"))
+
+	// Public Routes
+	rootRouter.Mount("/api/v1/", otelhttp.NewHandler(publicRouter, "public-server"))
 
 	server := &http.Server{
 		Addr:              addr,
@@ -69,7 +52,9 @@ func NewHttpApiServer(addr string, app core.Application, envConfig config.Values
 	}
 }
 
-func (s HttpApiServer) StartServer() {
+func (s HttpApiServer) StartServer(port int) {
+	fmt.Printf("Server starting on port %v\n", port)
+
 	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		panic(err)
 	}

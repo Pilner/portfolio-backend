@@ -8,6 +8,7 @@ import (
 )
 
 type Values struct {
+	PortNumber                int    `mapstructure:"PORT"`
 	DbConnectionUrl           string `mapstructure:"DB_CONNECTION_URL"`
 	JwtSecretKey              string `mapstructure:"JWT_SECRET_KEY"`
 	JwtTokenExpiryMinutes     int    `mapstructure:"JWT_TOKEN_EXPIRY_MINUTES"`

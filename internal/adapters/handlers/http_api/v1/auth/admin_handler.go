@@ -28,13 +28,13 @@ type AdminHandler struct {
 func NewAdminHandler(
 	authRefresh ports.AuthRefresh,
 	tokenService ports.TokenService,
-	cfg config.Values,
+	envConfig config.Values,
 	logger *slog.Logger,
 ) AdminHandler {
 	return AdminHandler{
 		authRefresh:  authRefresh,
 		tokenService: tokenService,
-		config:       cfg,
+		config:       envConfig,
 		logger:       logger,
 	}
 }

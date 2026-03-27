@@ -27,8 +27,8 @@ type Application struct {
 	dbPool       *pgxpool.Pool
 }
 
-func NewApplication(ctx context.Context, config config.Values, logger *slog.Logger) Application {
-	dbConfig, err := pgxpool.ParseConfig(config.DbConnectionUrl)
+func NewApplication(ctx context.Context, envConfig config.Values, logger *slog.Logger) Application {
+	dbConfig, err := pgxpool.ParseConfig(envConfig.DbConnectionUrl)
 	if err != nil {
 		panic(err)
 	}
@@ -44,10 +44,10 @@ func NewApplication(ctx context.Context, config config.Values, logger *slog.Logg
 
 	authRepo := repository.NewAuthPostgresRepository(postgresqlPool, logger)
 	bcryptHasher := crypto.NewBcryptHasher()
-	tokenService := token.NewJwtService(config)
+	tokenService := token.NewJwtService(envConfig)
 
 	return Application{
-		Config: config,
+		Config: envConfig,
 		Features: Features{
 			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, bcryptHasher, tokenService),
 			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, bcryptHasher, tokenService),

@@ -29,13 +29,13 @@ type PublicHandler struct {
 func NewPublicHandler(
 	authRegister ports.AuthRegister,
 	authLogin ports.AuthLogin,
-	cfg config.Values,
+	envConfig config.Values,
 	logger *slog.Logger,
 ) PublicHandler {
 	return PublicHandler{
 		authRegister: authRegister,
 		authLogin:    authLogin,
-		config:       cfg,
+		config:       envConfig,
 		logger:       logger,
 	}
 }

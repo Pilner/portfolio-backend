@@ -1,6 +1,6 @@
 PKG_LIST := $(shell go list ./... | grep -v /vendor/)
 
-.PHONY: init vendor
+.PHONY: % init vendor
 
 init:
 	@echo "Initializing local development environment..."
@@ -22,6 +22,10 @@ dockerdown:
 	docker compose -f infra/docker-compose.yaml down -v --remove-orphans
 
 
+migrate-create:
+	tern new "$(filter-out $@,$(MAKECMDGOALS))" -m "internal/adapters/repository/migrations/data"
+
+
 db-fresh:
 	docker exec -it postgres_db psql -U root -d postgres -c "DROP DATABASE IF EXISTS frv;"
 	docker exec -it postgres_db psql -U root -d postgres -c "CREATE DATABASE frv;"
@@ -39,3 +43,6 @@ vendor:
 	@find vendor -type f -name "*.md" -delete
 	@find vendor -type f -name "*.txt" ! -name "modules.txt" -delete
 	@echo "Vendor Cleanup Complete!"
+
+%:
+	@:

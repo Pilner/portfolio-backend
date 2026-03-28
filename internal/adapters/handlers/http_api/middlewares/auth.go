@@ -35,7 +35,7 @@ func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, 
 
 			cookie, err := r.Cookie(tokenCookie)
 			if err != nil || cookie.Value == "" {
-				logger.ErrorContext(r.Context(), "missing token cookie", "cookie", tokenCookie, "err", err)
+				logger.ErrorContext(r.Context(), "missing token cookie", "cookie", tokenCookie, "error", err)
 				commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrUnauthorized())
 				return
 			}
@@ -43,12 +43,12 @@ func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, 
 			u, err := tokenSvc.ValidateToken(tokenType, cookie.Value)
 			if err != nil {
 				if errors.Is(err, domain.ErrInvalidToken) || errors.Is(err, domain.ErrExpiredToken) {
-					logger.ErrorContext(r.Context(), "invalid token cookie", "cookie", tokenCookie, "err", err)
+					logger.ErrorContext(r.Context(), "invalid token cookie", "cookie", tokenCookie, "error", err)
 					commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrUnauthorized())
 					return
 				}
 
-				logger.ErrorContext(r.Context(), "token validation failed", "cookie", tokenCookie, "err", err)
+				logger.ErrorContext(r.Context(), "token validation failed", "cookie", tokenCookie, "error", err)
 				commons.RenderError(w, r, logger, AuthLoginRenderErrFailed, commons.ErrInternalServerError(err))
 				return
 			}

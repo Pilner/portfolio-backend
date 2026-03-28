@@ -13,13 +13,14 @@ import (
 
 /* API-Level Validation Errors */
 var (
-	ErrInvalidDataType    = errors.New("invalid data type in request payload")
-	ErrEmptyEmail         = errors.New("email should have a value")
-	ErrInvalidEmail       = errors.New("invalid email format")
-	ErrEmptyPassword      = errors.New("password should have a value")
-	ErrPasswordTooShort   = errors.New("password should be at least 8 characters long")
-	ErrEmptyDisplayName   = errors.New("display_name should have a value")
-	ErrInvalidDisplayName = errors.New("invalid display_name format")
+	ErrInvalidDataType       = errors.New("invalid data type in request payload")
+	ErrEmptyEmail            = errors.New("email should have a value")
+	ErrInvalidEmail          = errors.New("invalid email format")
+	ErrEmptyPassword         = errors.New("password should have a value")
+	ErrPasswordTooShort      = errors.New("password should be at least 8 characters long")
+	ErrEmptyDisplayName      = errors.New("display_name should have a value")
+	ErrInvalidDisplayName    = errors.New("invalid display_name format")
+	ErrUserNotFoundInContext = errors.New("user not found in context")
 )
 
 /* Application Error Codes */

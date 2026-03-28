@@ -10,7 +10,6 @@ import (
 	authdomain "portfolio-backend/internal/core/domain/auth"
 	"portfolio-backend/internal/core/ports"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -38,14 +37,6 @@ func NewPublicHandler(
 		config:       envConfig,
 		logger:       logger,
 	}
-}
-
-func (h PublicHandler) Routes() chi.Router {
-	r := chi.NewRouter()
-	r.Post("/signup", h.AuthRegister)
-	r.Post("/signin", h.AuthLogin)
-
-	return r
 }
 
 func (h PublicHandler) AuthRegister(w http.ResponseWriter, r *http.Request) {

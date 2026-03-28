@@ -7,7 +7,11 @@ import (
 
 type AuthUserCtxKey struct{}
 
-func AuthUserFromContext(ctx context.Context) (*authdomain.User, bool) {
+func AuthUserFromContext(ctx context.Context) (*authdomain.User, error) {
 	u, ok := ctx.Value(AuthUserCtxKey{}).(*authdomain.User)
-	return u, ok && u != nil
+	if !ok {
+		return u, ErrUserNotFoundInContext
+	}
+
+	return u, nil
 }

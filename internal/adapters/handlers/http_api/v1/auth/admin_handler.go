@@ -5,11 +5,8 @@ import (
 	"net/http"
 	"portfolio-backend/internal/adapters/config"
 	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
-	"portfolio-backend/internal/adapters/handlers/http_api/middlewares"
-	tokendomain "portfolio-backend/internal/core/domain/token"
 	"portfolio-backend/internal/core/ports"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -19,39 +16,33 @@ const (
 )
 
 type AdminHandler struct {
-	authRefresh  ports.AuthRefresh
-	tokenService ports.TokenService
-	config       config.Values
-	logger       *slog.Logger
+	authRefresh ports.AuthRefresh
+	config      config.Values
+	logger      *slog.Logger
 }
 
 func NewAdminHandler(
 	authRefresh ports.AuthRefresh,
-	tokenService ports.TokenService,
 	envConfig config.Values,
 	logger *slog.Logger,
 ) AdminHandler {
 	return AdminHandler{
-		authRefresh:  authRefresh,
-		tokenService: tokenService,
-		config:       envConfig,
-		logger:       logger,
+		authRefresh: authRefresh,
+		config:      envConfig,
+		logger:      logger,
 	}
-}
-
-func (h AdminHandler) Routes() chi.Router {
-	r := chi.NewRouter()
-	r.With(middlewares.RequireToken(tokendomain.TokenTypeJwt, h.tokenService, h.logger)).Get("/check", h.AuthCheck)
-	r.With(middlewares.RequireToken(tokendomain.TokenTypeRefresh, h.tokenService, h.logger)).Post("/refresh", h.AuthRefresh)
-
-	return r
 }
 
 func (h AdminHandler) AuthCheck(w http.ResponseWriter, r *http.Request) {
-	user, ok := commons.AuthUserFromContext(r.Context())
-	if !ok {
-		h.logger.ErrorContext(r.Context(), "auth check failed: no user found in context")
+	user, err := commons.AuthUserFromContext(r.Context())
+	if err != nil {
+		h.logger.ErrorContext(r.Context(), "auth check failed", "error", err)
+		apiError := commons.ErrInternalServerError(err)
+		commons.RenderError(w, r, h.logger, AuthCheckRenderErrFailed, apiError)
+		return
 	}
+
+	h.logger.InfoContext(r.Context(), "auth checked", "user", user)
 
 	render.Status(r, http.StatusOK)
 	render.Respond(w, r, UserResponse{
@@ -64,9 +55,12 @@ func (h AdminHandler) AuthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h AdminHandler) AuthRefresh(w http.ResponseWriter, r *http.Request) {
-	user, ok := commons.AuthUserFromContext(r.Context())
-	if !ok {
-		h.logger.ErrorContext(r.Context(), "auth refresh failed: no user found in context")
+	user, err := commons.AuthUserFromContext(r.Context())
+	if err != nil {
+		h.logger.ErrorContext(r.Context(), "auth refresh failed", "error", err)
+		apiError := commons.ErrInternalServerError(err)
+		commons.RenderError(w, r, h.logger, AuthRefreshRenderErrFailed, apiError)
+		return
 	}
 
 	accessToken, refreshToken, err := h.authRefresh.Handle(r.Context(), user)

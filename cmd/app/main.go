@@ -30,7 +30,7 @@ func main() {
 	logger := slog.New(logHandler)
 	envConfig, err := config.LoadConfig(os.Getenv("ENV"), "./configs")
 	if err != nil {
-		logger.Error("configuration load error", "err", err)
+		logger.Error("configuration load error", "error", err)
 		panic(err)
 	}
 
@@ -87,7 +87,7 @@ func startMigration(config config.Values, logger *slog.Logger) {
 	defer func(migrator migrations.Migrator) {
 		err := migrator.ReleaseConn()
 		if err != nil {
-			migratorLogger.Error("unable to release migration connection", "err", err)
+			migratorLogger.Error("unable to release migration connection", "error", err)
 		}
 	}(migrator)
 

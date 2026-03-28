@@ -1,3 +1,5 @@
+PKG_LIST := $(shell go list ./... | grep -v /vendor/)
+
 .PHONY: init vendor
 
 init:
@@ -9,6 +11,10 @@ init:
 run:
 	@go build -o frv ./cmd/app
 	@./frv
+
+test:
+	@go test -count=1 -short ${PKG_LIST}
+
 
 dockerup:
 	docker-compose -f infra/docker-compose.yaml up -d

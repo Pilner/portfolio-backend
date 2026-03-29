@@ -34,28 +34,22 @@ func NewAuthLoginHandler(repo authdomain.AuthRepository, hasher ports.PasswordHa
 func (h AuthLoginHandler) Handle(ctx context.Context, payload authdomain.LoginUser) (authdomain.User, string, string, error) {
 	user, passwordHash, err := h.repo.FindUser(ctx, payload.Email)
 	if err != nil {
-		return authdomain.User{}, "", "", err
+		return user, "", "", err
 	}
 
 	if err := h.hasher.Compare(passwordHash, payload.Password); err != nil {
-		return authdomain.User{}, "", "", domain.ErrPasswordDoesNotMatch
+		return user, "", "", domain.ErrPasswordDoesNotMatch
 	}
 
-	userData := authdomain.User{
-		Id:          user.Id,
-		Email:       user.Email,
-		DisplayName: user.DisplayName,
-	}
-
-	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeJwt, userData)
+	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeJwt, user)
 	if err != nil {
-		return userData, "", "", err
+		return user, "", "", err
 	}
 
-	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeRefresh, userData)
+	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeRefresh, user)
 	if err != nil {
-		return userData, "", "", err
+		return user, "", "", err
 	}
-	return userData, accessToken, refreshToken, err
+	return user, accessToken, refreshToken, nil
 
 }

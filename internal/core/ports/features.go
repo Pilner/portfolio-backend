@@ -2,7 +2,7 @@ package ports
 
 import (
 	"context"
-	authdomain "portfolio-backend/internal/core/domain/auth"
+	authdomain "frv-backend/internal/core/domain/auth"
 )
 
 /* -------- V1 -------- */

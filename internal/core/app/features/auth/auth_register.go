@@ -2,9 +2,9 @@ package features
 
 import (
 	"context"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
 )
 
 type AuthRegisterHandler struct {

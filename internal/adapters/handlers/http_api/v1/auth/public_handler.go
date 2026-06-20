@@ -4,11 +4,11 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"portfolio-backend/internal/adapters/config"
-	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
-	"portfolio-backend/internal/core/domain"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	"portfolio-backend/internal/core/ports"
+	"frv-backend/internal/adapters/config"
+	commons "frv-backend/internal/adapters/handlers/http_api/commons"
+	"frv-backend/internal/core/domain"
+	authdomain "frv-backend/internal/core/domain/auth"
+	"frv-backend/internal/core/ports"
 
 	"github.com/go-chi/render"
 )

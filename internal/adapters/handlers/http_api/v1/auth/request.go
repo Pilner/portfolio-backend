@@ -2,7 +2,7 @@ package v1
 
 import (
 	"net/http"
-	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
+	commons "frv-backend/internal/adapters/handlers/http_api/commons"
 )
 
 type RegisterAuth struct {

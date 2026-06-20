@@ -1,7 +1,7 @@
 package domain
 
 import (
-	authdomain "portfolio-backend/internal/core/domain/auth"
+	authdomain "frv-backend/internal/core/domain/auth"
 
 	"github.com/golang-jwt/jwt/v5"
 )

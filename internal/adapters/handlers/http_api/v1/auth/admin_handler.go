@@ -3,9 +3,9 @@ package v1
 import (
 	"log/slog"
 	"net/http"
-	"portfolio-backend/internal/adapters/config"
-	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
-	"portfolio-backend/internal/core/ports"
+	"frv-backend/internal/adapters/config"
+	commons "frv-backend/internal/adapters/handlers/http_api/commons"
+	"frv-backend/internal/core/ports"
 
 	"github.com/go-chi/render"
 )

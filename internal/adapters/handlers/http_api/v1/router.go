@@ -2,11 +2,11 @@ package v1
 
 import (
 	"log/slog"
-	"portfolio-backend/internal/adapters/config"
-	"portfolio-backend/internal/adapters/handlers/http_api/middlewares"
-	v1auth "portfolio-backend/internal/adapters/handlers/http_api/v1/auth"
-	core "portfolio-backend/internal/core/app"
-	tokendomain "portfolio-backend/internal/core/domain/token"
+	"frv-backend/internal/adapters/config"
+	"frv-backend/internal/adapters/handlers/http_api/middlewares"
+	v1auth "frv-backend/internal/adapters/handlers/http_api/v1/auth"
+	core "frv-backend/internal/core/app"
+	tokendomain "frv-backend/internal/core/domain/token"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

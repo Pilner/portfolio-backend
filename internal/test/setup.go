@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
-	"portfolio-backend/internal/adapters/repository/migrations"
+	"frv-backend/internal/adapters/repository/migrations"
 	"sync"
 	"time"
 

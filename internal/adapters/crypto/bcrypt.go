@@ -1,7 +1,7 @@
 package crypto
 
 import (
-	"portfolio-backend/internal/core/ports"
+	"frv-backend/internal/core/ports"
 
 	"golang.org/x/crypto/bcrypt"
 )

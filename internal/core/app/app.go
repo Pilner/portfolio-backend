@@ -3,14 +3,14 @@ package core
 import (
 	"context"
 	"log/slog"
-	"portfolio-backend/internal/adapters/config"
-	"portfolio-backend/internal/adapters/crypto"
-	authrepo "portfolio-backend/internal/adapters/repository/auth"
-	"portfolio-backend/internal/adapters/token"
-	"portfolio-backend/internal/service"
+	"frv-backend/internal/adapters/config"
+	"frv-backend/internal/adapters/crypto"
+	authrepo "frv-backend/internal/adapters/repository/auth"
+	"frv-backend/internal/adapters/token"
+	"frv-backend/internal/service"
 
-	authfeature "portfolio-backend/internal/core/app/features/auth"
-	"portfolio-backend/internal/core/ports"
+	authfeature "frv-backend/internal/core/app/features/auth"
+	"frv-backend/internal/core/ports"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

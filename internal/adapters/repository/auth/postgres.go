@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"portfolio-backend/internal/adapters/repository"
-	"portfolio-backend/internal/core/domain"
-	authdomain "portfolio-backend/internal/core/domain/auth"
+	"frv-backend/internal/adapters/repository"
+	"frv-backend/internal/core/domain"
+	authdomain "frv-backend/internal/core/domain/auth"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"

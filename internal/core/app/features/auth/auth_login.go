@@ -2,10 +2,10 @@ package features
 
 import (
 	"context"
-	"portfolio-backend/internal/core/domain"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
+	"frv-backend/internal/core/domain"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
 )
 
 type AuthLoginHandler struct {

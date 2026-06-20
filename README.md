@@ -1,4 +1,4 @@
-# Portfolio Backend
+# FRV Backend
 
 A modern, scalable backend service for managing my portfolio website.
 

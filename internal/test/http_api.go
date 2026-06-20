@@ -7,8 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
-	authdomain "portfolio-backend/internal/core/domain/auth"
+	commons "frv-backend/internal/adapters/handlers/http_api/commons"
+	authdomain "frv-backend/internal/core/domain/auth"
 	"testing"
 )
 

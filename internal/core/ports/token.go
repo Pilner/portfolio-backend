@@ -1,8 +1,8 @@
 package ports
 
 import (
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
 )
 
 type TokenManager interface {

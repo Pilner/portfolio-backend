@@ -1,4 +1,4 @@
-module portfolio-backend
+module frv-backend
 
 go 1.26.1
 

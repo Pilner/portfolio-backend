@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	commons "portfolio-backend/internal/adapters/handlers/http_api/commons"
-	"portfolio-backend/internal/core/domain"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
+	commons "frv-backend/internal/adapters/handlers/http_api/commons"
+	"frv-backend/internal/core/domain"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
 )
 
 const (

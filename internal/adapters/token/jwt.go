@@ -2,11 +2,11 @@ package token
 
 import (
 	"errors"
-	"portfolio-backend/internal/adapters/config"
-	"portfolio-backend/internal/core/domain"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
+	"frv-backend/internal/adapters/config"
+	"frv-backend/internal/core/domain"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,7 +39,7 @@ func (j JwtTokenManager) GenerateToken(tokenType tokendomain.TokenType, payload 
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(duration) * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "portfolio-backend",
+			Issuer:    "frv-backend",
 			Subject:   payload.Id,
 			Audience:  jwt.ClaimStrings{payload.Email},
 			ID:        uuid.NewString(),

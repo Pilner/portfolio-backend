@@ -3,11 +3,11 @@ package features_test
 import (
 	"context"
 	"errors"
-	features "portfolio-backend/internal/core/app/features/auth"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
-	"portfolio-backend/internal/test"
+	features "frv-backend/internal/core/app/features/auth"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
+	"frv-backend/internal/test"
 	"testing"
 )
 

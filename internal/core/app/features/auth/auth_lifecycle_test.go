@@ -3,12 +3,12 @@ package features_test
 import (
 	"context"
 	"log"
-	"portfolio-backend/internal/adapters/config"
-	"portfolio-backend/internal/adapters/crypto"
-	authrepo "portfolio-backend/internal/adapters/repository/auth"
-	"portfolio-backend/internal/adapters/token"
-	"portfolio-backend/internal/service"
-	"portfolio-backend/internal/test"
+	"frv-backend/internal/adapters/config"
+	"frv-backend/internal/adapters/crypto"
+	authrepo "frv-backend/internal/adapters/repository/auth"
+	"frv-backend/internal/adapters/token"
+	"frv-backend/internal/service"
+	"frv-backend/internal/test"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"

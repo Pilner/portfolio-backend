@@ -11,11 +11,11 @@ import (
 	"syscall"
 	"time"
 
-	"portfolio-backend/internal/adapters/config"
-	"portfolio-backend/internal/adapters/handlers/http_api"
-	"portfolio-backend/internal/adapters/repository/migrations"
-	"portfolio-backend/internal/adapters/util"
-	core "portfolio-backend/internal/core/app"
+	"frv-backend/internal/adapters/config"
+	"frv-backend/internal/adapters/handlers/http_api"
+	"frv-backend/internal/adapters/repository/migrations"
+	"frv-backend/internal/adapters/util"
+	core "frv-backend/internal/core/app"
 )
 
 type CloseableService interface {

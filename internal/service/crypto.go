@@ -1,6 +1,6 @@
 package service
 
-import "portfolio-backend/internal/core/ports"
+import "frv-backend/internal/core/ports"
 
 type HashManager struct {
 	hashManager ports.HashManager

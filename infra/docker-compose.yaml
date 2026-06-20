@@ -1,4 +1,4 @@
-name: portfolio-backend
+name: frv-backend
 
 services:
   postgres:

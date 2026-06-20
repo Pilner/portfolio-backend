@@ -3,12 +3,12 @@ package features_test
 import (
 	"context"
 	"errors"
-	features "portfolio-backend/internal/core/app/features/auth"
-	"portfolio-backend/internal/core/domain"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	tokendomain "portfolio-backend/internal/core/domain/token"
-	"portfolio-backend/internal/core/ports"
-	"portfolio-backend/internal/test"
+	features "frv-backend/internal/core/app/features/auth"
+	"frv-backend/internal/core/domain"
+	authdomain "frv-backend/internal/core/domain/auth"
+	tokendomain "frv-backend/internal/core/domain/token"
+	"frv-backend/internal/core/ports"
+	"frv-backend/internal/test"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

@@ -3,11 +3,11 @@ package v1_test
 import (
 	"context"
 	"net/http"
-	"portfolio-backend/internal/adapters/config"
-	authhandler "portfolio-backend/internal/adapters/handlers/http_api/v1/auth"
-	authdomain "portfolio-backend/internal/core/domain/auth"
-	"portfolio-backend/internal/core/ports"
-	"portfolio-backend/internal/test"
+	"frv-backend/internal/adapters/config"
+	authhandler "frv-backend/internal/adapters/handlers/http_api/v1/auth"
+	authdomain "frv-backend/internal/core/domain/auth"
+	"frv-backend/internal/core/ports"
+	"frv-backend/internal/test"
 	"testing"
 )
 

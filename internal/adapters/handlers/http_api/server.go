@@ -7,12 +7,12 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"portfolio-backend/internal/adapters/config"
-	core "portfolio-backend/internal/core/app"
+	"frv-backend/internal/adapters/config"
+	core "frv-backend/internal/core/app"
 	"time"
 
-	"portfolio-backend/internal/adapters/handlers/http_api/middlewares"
-	v1 "portfolio-backend/internal/adapters/handlers/http_api/v1"
+	"frv-backend/internal/adapters/handlers/http_api/middlewares"
+	v1 "frv-backend/internal/adapters/handlers/http_api/v1"
 
 	"github.com/go-chi/chi/v5"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"

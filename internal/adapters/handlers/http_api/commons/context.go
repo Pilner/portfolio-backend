@@ -2,7 +2,7 @@ package http_api
 
 import (
 	"context"
-	authdomain "portfolio-backend/internal/core/domain/auth"
+	authdomain "frv-backend/internal/core/domain/auth"
 )
 
 type AuthUserCtxKey struct{}

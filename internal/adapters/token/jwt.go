@@ -13,24 +13,24 @@ import (
 	"github.com/google/uuid"
 )
 
-type jwtService struct {
+type JwtTokenManager struct {
 	config config.Values
 }
 
-func NewJwtService(cfg config.Values) ports.TokenService {
-	return jwtService{config: cfg}
+func NewJwtTokenManager(cfg config.Values) ports.TokenManager {
+	return JwtTokenManager{config: cfg}
 }
 
-func (s jwtService) GenerateToken(tokenType tokendomain.TokenType, payload authdomain.User) (string, error) {
+func (j JwtTokenManager) GenerateToken(tokenType tokendomain.TokenType, payload authdomain.User) (string, error) {
 	var key []byte
 	var duration int
 	if tokenType == tokendomain.TokenTypeJwt {
-		key = []byte(s.config.JwtSecretKey)
-		duration = s.config.JwtTokenExpiryMinutes
+		key = []byte(j.config.JwtSecretKey)
+		duration = j.config.JwtTokenExpiryMinutes
 	}
 	if tokenType == tokendomain.TokenTypeRefresh {
-		key = []byte(s.config.RefreshTokenSecretKey)
-		duration = s.config.RefreshTokenExpiryMinutes
+		key = []byte(j.config.RefreshTokenSecretKey)
+		duration = j.config.RefreshTokenExpiryMinutes
 	}
 
 	claims := tokendomain.TokenClaim{
@@ -56,13 +56,13 @@ func (s jwtService) GenerateToken(tokenType tokendomain.TokenType, payload authd
 	return jwtString, nil
 }
 
-func (s jwtService) ValidateToken(tokenType tokendomain.TokenType, tokenString string) (*authdomain.User, error) {
+func (j JwtTokenManager) ValidateToken(tokenType tokendomain.TokenType, tokenString string) (*authdomain.User, error) {
 	var key []byte
 	if tokenType == tokendomain.TokenTypeJwt {
-		key = []byte(s.config.JwtSecretKey)
+		key = []byte(j.config.JwtSecretKey)
 	}
 	if tokenType == tokendomain.TokenTypeRefresh {
-		key = []byte(s.config.RefreshTokenSecretKey)
+		key = []byte(j.config.RefreshTokenSecretKey)
 	}
 
 	t, err := jwt.ParseWithClaims(tokenString, &tokendomain.TokenClaim{}, func(tok *jwt.Token) (any, error) {

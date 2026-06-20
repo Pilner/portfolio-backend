@@ -8,25 +8,25 @@ import (
 )
 
 type AuthRefreshHandler struct {
-	tokenService ports.TokenService
+	tokenManager ports.TokenManager
 }
 
-func NewAuthRefreshHandler(tokenService ports.TokenService) AuthRefreshHandler {
-	if tokenService == nil {
-		panic("nil token service")
+func NewAuthRefreshHandler(tokenManager ports.TokenManager) AuthRefreshHandler {
+	if tokenManager == nil {
+		panic("nil token manager adapter")
 	}
 	return AuthRefreshHandler{
-		tokenService: tokenService,
+		tokenManager: tokenManager,
 	}
 }
 
 func (h AuthRefreshHandler) Handle(ctx context.Context, userData *authdomain.User) (string, string, error) {
-	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeJwt, *userData)
+	accessToken, err := h.tokenManager.GenerateToken(tokendomain.TokenTypeJwt, *userData)
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeRefresh, *userData)
+	refreshToken, err := h.tokenManager.GenerateToken(tokendomain.TokenTypeRefresh, *userData)
 	if err != nil {
 		return "", "", err
 	}

@@ -1,10 +1,11 @@
-package repository
+package auth_repository
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
+	"portfolio-backend/internal/adapters/repository"
 	"portfolio-backend/internal/core/domain"
 	authdomain "portfolio-backend/internal/core/domain/auth"
 
@@ -62,7 +63,7 @@ func (r AuthPostgresRepository) CreateUser(ctx context.Context, payload authdoma
 	).Scan(&u.Id, &u.Email)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgErrUniqueViolation {
+		if errors.As(err, &pgErr) && pgErr.Code == repository.PgErrUniqueViolation {
 			return u, domain.ErrEmailAlreadyExists
 		}
 

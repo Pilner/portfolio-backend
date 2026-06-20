@@ -1,6 +1,6 @@
 package ports
 
-type PasswordHasher interface {
-	Hash(password string) (string, error)
-	Compare(hashedPassword, password string) error
+type HashManager interface {
+	Hash(text string) (string, error)
+	Compare(hashedText, textToCompare string) error
 }

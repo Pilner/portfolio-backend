@@ -24,7 +24,7 @@ func (m *mockTokenService) ValidateToken(tokenType tokendomain.TokenType, tokenS
 	return m.mockValidateToken(tokenType, tokenString)
 }
 
-func testAuthRefresh(t *testing.T, tokenService ports.TokenService) {
+func testAuthRefresh(t *testing.T, tokenManager ports.TokenManager) {
 	tokenGenerationError := errors.New("Fail")
 
 	testCases := []struct {
@@ -53,19 +53,19 @@ func testAuthRefresh(t *testing.T, tokenService ports.TokenService) {
 	}
 
 	for _, tc := range testCases {
-		var tokSvc ports.TokenService
+		var injectedTokenManager ports.TokenManager
 
 		if tc.shouldFailTokenGen {
-			tokSvc = &mockTokenService{
+			injectedTokenManager = &mockTokenService{
 				mockGenerateToken: func(tokenType tokendomain.TokenType, payload authdomain.User) (string, error) {
 					return "", tokenGenerationError
 				},
 			}
 		} else {
-			tokSvc = tokenService
+			injectedTokenManager = tokenManager
 		}
 
-		feature := features.NewAuthRefreshHandler(tokSvc)
+		feature := features.NewAuthRefreshHandler(injectedTokenManager)
 		t.Run(tc.description, func(t *testing.T) {
 			_, _, err := feature.Handle(context.TODO(), tc.payload)
 

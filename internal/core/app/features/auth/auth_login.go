@@ -10,24 +10,24 @@ import (
 
 type AuthLoginHandler struct {
 	repo         authdomain.AuthRepository
-	hasher       ports.PasswordHasher
-	tokenService ports.TokenService
+	hashManager  ports.HashManager
+	tokenManager ports.TokenManager
 }
 
-func NewAuthLoginHandler(repo authdomain.AuthRepository, hasher ports.PasswordHasher, tokenService ports.TokenService) AuthLoginHandler {
+func NewAuthLoginHandler(repo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) AuthLoginHandler {
 	if repo == nil {
 		panic("nil auth repo")
 	}
-	if hasher == nil {
-		panic("nil password hasher")
+	if hashManager == nil {
+		panic("nil hash manager adapter")
 	}
-	if tokenService == nil {
-		panic("nil token service")
+	if tokenManager == nil {
+		panic("nil token manager adapter")
 	}
 	return AuthLoginHandler{
 		repo:         repo,
-		hasher:       hasher,
-		tokenService: tokenService,
+		hashManager:  hashManager,
+		tokenManager: tokenManager,
 	}
 }
 
@@ -37,16 +37,16 @@ func (h AuthLoginHandler) Handle(ctx context.Context, payload authdomain.LoginUs
 		return user, "", "", err
 	}
 
-	if err := h.hasher.Compare(passwordHash, payload.Password); err != nil {
+	if err := h.hashManager.Compare(passwordHash, payload.Password); err != nil {
 		return user, "", "", domain.ErrPasswordDoesNotMatch
 	}
 
-	accessToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeJwt, user)
+	accessToken, err := h.tokenManager.GenerateToken(tokendomain.TokenTypeJwt, user)
 	if err != nil {
 		return user, "", "", err
 	}
 
-	refreshToken, err := h.tokenService.GenerateToken(tokendomain.TokenTypeRefresh, user)
+	refreshToken, err := h.tokenManager.GenerateToken(tokendomain.TokenTypeRefresh, user)
 	if err != nil {
 		return user, "", "", err
 	}

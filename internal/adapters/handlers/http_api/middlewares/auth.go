@@ -18,7 +18,7 @@ const (
 
 // RequireToken validates the specified token cookie and, on success,
 // stores the authenticated user in the request context.
-func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, logger *slog.Logger) func(http.Handler) http.Handler {
+func RequireToken(tokenType tokendomain.TokenType, tokenManager ports.TokenManager, logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var tokenCookie string
@@ -40,7 +40,7 @@ func RequireToken(tokenType tokendomain.TokenType, tokenSvc ports.TokenService, 
 				return
 			}
 
-			u, err := tokenSvc.ValidateToken(tokenType, cookie.Value)
+			u, err := tokenManager.ValidateToken(tokenType, cookie.Value)
 			if err != nil {
 				if errors.Is(err, domain.ErrInvalidToken) || errors.Is(err, domain.ErrExpiredToken) {
 					logger.ErrorContext(r.Context(), "invalid token cookie", "cookie", tokenCookie, "error", err)

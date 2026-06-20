@@ -5,8 +5,9 @@ import (
 	"log/slog"
 	"portfolio-backend/internal/adapters/config"
 	"portfolio-backend/internal/adapters/crypto"
-	"portfolio-backend/internal/adapters/repository"
+	authrepo "portfolio-backend/internal/adapters/repository/auth"
 	"portfolio-backend/internal/adapters/token"
+	"portfolio-backend/internal/service"
 
 	authfeature "portfolio-backend/internal/core/app/features/auth"
 	"portfolio-backend/internal/core/ports"
@@ -23,7 +24,7 @@ type Features struct {
 type Application struct {
 	Config       config.Values
 	Features     Features
-	TokenService ports.TokenService
+	TokenManager ports.TokenManager
 	dbPool       *pgxpool.Pool
 }
 
@@ -42,18 +43,23 @@ func NewApplication(ctx context.Context, envConfig config.Values, logger *slog.L
 		panic(err)
 	}
 
-	authRepo := repository.NewAuthPostgresRepository(postgresqlPool, logger)
-	bcryptHasher := crypto.NewBcryptHasher()
-	tokenService := token.NewJwtService(envConfig)
+	// Adapters
+	authRepo := authrepo.NewAuthPostgresRepository(postgresqlPool, logger)
+	bcryptHashManager := crypto.NewBcryptHashManager()
+	jwtTokenManager := token.NewJwtTokenManager(envConfig)
+
+	// Services
+	hashManager := service.NewHashManager(bcryptHashManager)
+	tokenManager := service.NewTokenManager(jwtTokenManager)
 
 	return Application{
 		Config: envConfig,
 		Features: Features{
-			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, bcryptHasher, tokenService),
-			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, bcryptHasher, tokenService),
-			AuthRefresh:  authfeature.NewAuthRefreshHandler(tokenService),
+			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, hashManager, tokenManager),
+			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, hashManager, tokenManager),
+			AuthRefresh:  authfeature.NewAuthRefreshHandler(tokenManager),
 		},
-		TokenService: tokenService,
+		TokenManager: tokenManager,
 		dbPool:       postgresqlPool,
 	}
 }

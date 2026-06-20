@@ -5,8 +5,9 @@ import (
 	"log"
 	"portfolio-backend/internal/adapters/config"
 	"portfolio-backend/internal/adapters/crypto"
-	"portfolio-backend/internal/adapters/repository"
+	authrepo "portfolio-backend/internal/adapters/repository/auth"
 	"portfolio-backend/internal/adapters/token"
+	"portfolio-backend/internal/service"
 	"portfolio-backend/internal/test"
 	"testing"
 
@@ -25,17 +26,22 @@ func TestAuthLifecycle(t *testing.T) {
 		JwtTokenExpiryMinutes:     30,
 		RefreshTokenExpiryMinutes: 10080,
 	}
-	authRepo := repository.NewAuthPostgresRepository(psqlPool, test.SetupTestLogger())
-	bcryptHasher := crypto.NewBcryptHasher()
-	tokenService := token.NewJwtService(envConfig)
+	// Adapters
+	authRepo := authrepo.NewAuthPostgresRepository(psqlPool, test.SetupTestLogger())
+	bcryptHashManager := crypto.NewBcryptHashManager()
+	jwtTokenManager := token.NewJwtTokenManager(envConfig)
+
+	// Services
+	hashManager := service.NewHashManager(bcryptHashManager)
+	tokenManager := service.NewTokenManager(jwtTokenManager)
 
 	t.Run("Test_AuthRegister", func(t *testing.T) {
-		testAuthRegister(t, authRepo, bcryptHasher, tokenService)
+		testAuthRegister(t, authRepo, hashManager, tokenManager)
 	})
 	t.Run("Test_AuthLogin", func(t *testing.T) {
-		testAuthLogin(t, authRepo, bcryptHasher, tokenService)
+		testAuthLogin(t, authRepo, hashManager, tokenManager)
 	})
 	t.Run("Test_AuthRefresh", func(t *testing.T) {
-		testAuthRefresh(t, tokenService)
+		testAuthRefresh(t, tokenManager)
 	})
 }

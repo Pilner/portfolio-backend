@@ -28,12 +28,12 @@ func NewAdminRouter(app core.Application, envCfg config.Values, logger *slog.Log
 	// Routes
 	r.Route("/auth", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			r.Use(middlewares.RequireToken(tokendomain.TokenTypeJwt, app.TokenService, logger))
+			r.Use(middlewares.RequireToken(tokendomain.TokenTypeJwt, app.TokenManager, logger))
 			r.Get("/check", authHandler.AuthCheck)
 		})
 
 		r.Group(func(r chi.Router) {
-			r.Use(middlewares.RequireToken(tokendomain.TokenTypeRefresh, app.TokenService, logger))
+			r.Use(middlewares.RequireToken(tokendomain.TokenTypeRefresh, app.TokenManager, logger))
 			r.Post("/refresh", authHandler.AuthRefresh)
 		})
 

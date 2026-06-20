@@ -14,7 +14,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func testAuthRegister(t *testing.T, authRepo authdomain.AuthRepository, hasher ports.PasswordHasher, tokenService ports.TokenService) {
+func testAuthRegister(t *testing.T, authRepo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) {
 	tokenGenerationError := errors.New("Fail")
 
 	testCases := []struct {
@@ -70,19 +70,19 @@ func testAuthRegister(t *testing.T, authRepo authdomain.AuthRepository, hasher p
 	}
 
 	for _, tc := range testCases {
-		var tokSvc ports.TokenService
+		var injectedTokenManager ports.TokenManager
 
 		if tc.shouldFailTokenGen {
-			tokSvc = &mockTokenService{
+			injectedTokenManager = &mockTokenService{
 				mockGenerateToken: func(tokenType tokendomain.TokenType, payload authdomain.User) (string, error) {
 					return "", tokenGenerationError
 				},
 			}
 		} else {
-			tokSvc = tokenService
+			injectedTokenManager = tokenManager
 		}
 
-		feature := features.NewAuthRegisterHandler(authRepo, hasher, tokSvc)
+		feature := features.NewAuthRegisterHandler(authRepo, hashManager, injectedTokenManager)
 
 		t.Run(tc.description, func(t *testing.T) {
 			user, _, _, err := feature.Handle(context.TODO(), tc.payload)

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"frv-backend/internal/adapters/repository"
 	"frv-backend/internal/core/domain"
 	authdomain "frv-backend/internal/core/domain/auth"
+	"log/slog"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -19,19 +19,19 @@ const (
 	userInfoTable = "user_info"
 )
 
-type AuthPostgresRepository struct {
+type PostgresAuthRepository struct {
 	dbPool *pgxpool.Pool
 	logger *slog.Logger
 }
 
-func NewAuthPostgresRepository(dbPool *pgxpool.Pool, logger *slog.Logger) AuthPostgresRepository {
-	return AuthPostgresRepository{
+func NewPostgresAuthRepository(dbPool *pgxpool.Pool, logger *slog.Logger) PostgresAuthRepository {
+	return PostgresAuthRepository{
 		dbPool: dbPool,
-		logger: logger.With("component", "AuthPostgresRepository"),
+		logger: logger.With("component", "PostgresAuthRepository"),
 	}
 }
 
-func (r AuthPostgresRepository) CreateUser(ctx context.Context, payload authdomain.RegisterUser) (authdomain.User, error) {
+func (r PostgresAuthRepository) CreateUser(ctx context.Context, payload authdomain.RegisterUser) (authdomain.User, error) {
 	u := authdomain.User{}
 
 	tx, err := r.dbPool.Begin(ctx)
@@ -94,7 +94,7 @@ func (r AuthPostgresRepository) CreateUser(ctx context.Context, payload authdoma
 	return u, nil
 }
 
-func (r AuthPostgresRepository) FindUser(ctx context.Context, email string) (authdomain.User, string, error) {
+func (r PostgresAuthRepository) FindUser(ctx context.Context, email string) (authdomain.User, string, error) {
 	u := authdomain.User{}
 	var passwordHash string
 

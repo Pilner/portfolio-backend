@@ -2,12 +2,12 @@ package core
 
 import (
 	"context"
-	"log/slog"
 	"frv-backend/internal/adapters/config"
 	"frv-backend/internal/adapters/crypto"
 	authrepo "frv-backend/internal/adapters/repository/auth"
 	"frv-backend/internal/adapters/token"
 	"frv-backend/internal/service"
+	"log/slog"
 
 	authfeature "frv-backend/internal/core/app/features/auth"
 	"frv-backend/internal/core/ports"
@@ -44,9 +44,12 @@ func NewApplication(ctx context.Context, envConfig config.Values, logger *slog.L
 	}
 
 	// Adapters
-	authRepo := authrepo.NewAuthPostgresRepository(postgresqlPool, logger)
+	postgresAuthRepo := authrepo.NewPostgresAuthRepository(postgresqlPool, logger)
 	bcryptHashManager := crypto.NewBcryptHashManager()
 	jwtTokenManager := token.NewJwtTokenManager(envConfig)
+
+	// Repository
+	authRepository := service.NewAuthRepository(postgresAuthRepo)
 
 	// Services
 	hashManager := service.NewHashManager(bcryptHashManager)
@@ -55,8 +58,8 @@ func NewApplication(ctx context.Context, envConfig config.Values, logger *slog.L
 	return Application{
 		Config: envConfig,
 		Features: Features{
-			AuthRegister: authfeature.NewAuthRegisterHandler(authRepo, hashManager, tokenManager),
-			AuthLogin:    authfeature.NewAuthLoginHandler(authRepo, hashManager, tokenManager),
+			AuthRegister: authfeature.NewAuthRegisterHandler(authRepository, hashManager, tokenManager),
+			AuthLogin:    authfeature.NewAuthLoginHandler(authRepository, hashManager, tokenManager),
 			AuthRefresh:  authfeature.NewAuthRefreshHandler(tokenManager),
 		},
 		TokenManager: tokenManager,

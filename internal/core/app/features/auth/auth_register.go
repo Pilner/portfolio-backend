@@ -8,14 +8,14 @@ import (
 )
 
 type AuthRegisterHandler struct {
-	repo         authdomain.AuthRepository
+	authRepo     authdomain.AuthRepository
 	hashManager  ports.HashManager
 	tokenManager ports.TokenManager
 }
 
-func NewAuthRegisterHandler(repo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) AuthRegisterHandler {
-	if repo == nil {
-		panic("nil auth repo")
+func NewAuthRegisterHandler(authRepo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) AuthRegisterHandler {
+	if authRepo == nil {
+		panic("nil auth repository")
 	}
 	if hashManager == nil {
 		panic("nil hash manager adapter")
@@ -24,7 +24,7 @@ func NewAuthRegisterHandler(repo authdomain.AuthRepository, hashManager ports.Ha
 		panic("nil token manager adapter")
 	}
 	return AuthRegisterHandler{
-		repo:         repo,
+		authRepo:     authRepo,
 		hashManager:  hashManager,
 		tokenManager: tokenManager,
 	}
@@ -38,7 +38,7 @@ func (h AuthRegisterHandler) Handle(ctx context.Context, payload authdomain.Regi
 
 	payload.Password = hashedPassword
 
-	user, err := h.repo.CreateUser(ctx, payload)
+	user, err := h.authRepo.CreateUser(ctx, payload)
 	if err != nil {
 		return user, "", "", err
 	}

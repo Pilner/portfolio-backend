@@ -9,14 +9,14 @@ import (
 )
 
 type AuthLoginHandler struct {
-	repo         authdomain.AuthRepository
+	authRepo     authdomain.AuthRepository
 	hashManager  ports.HashManager
 	tokenManager ports.TokenManager
 }
 
-func NewAuthLoginHandler(repo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) AuthLoginHandler {
-	if repo == nil {
-		panic("nil auth repo")
+func NewAuthLoginHandler(authRepo authdomain.AuthRepository, hashManager ports.HashManager, tokenManager ports.TokenManager) AuthLoginHandler {
+	if authRepo == nil {
+		panic("nil auth repository")
 	}
 	if hashManager == nil {
 		panic("nil hash manager adapter")
@@ -25,14 +25,14 @@ func NewAuthLoginHandler(repo authdomain.AuthRepository, hashManager ports.HashM
 		panic("nil token manager adapter")
 	}
 	return AuthLoginHandler{
-		repo:         repo,
+		authRepo:     authRepo,
 		hashManager:  hashManager,
 		tokenManager: tokenManager,
 	}
 }
 
 func (h AuthLoginHandler) Handle(ctx context.Context, payload authdomain.LoginUser) (authdomain.User, string, string, error) {
-	user, passwordHash, err := h.repo.FindUser(ctx, payload.Email)
+	user, passwordHash, err := h.authRepo.FindUser(ctx, payload.Email)
 	if err != nil {
 		return user, "", "", err
 	}
